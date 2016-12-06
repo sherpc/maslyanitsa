@@ -31,10 +31,13 @@ class InputQueueFetcher
     return if @input_queue.empty?
 
     message = @input_queue.pop
-    message.insert(0, get_timestamp())
-    message.insert(0, @inc.next())
+    message.insert(0, get_timestamp().to_s)
+    message.insert(0, @inc.next().to_s)
 
-    csv = message.map { |v| "\"#{v}\"" }.join(",")
+    csv = message
+            .map { |v| v.gsub('"', ' ') }
+            .map { |v| "\"#{v}\"" }
+            .join(",")
     @output.puts(csv)
     @next_queue << message
   end
@@ -56,6 +59,11 @@ class GoogleQueueFetcher
 
     message = @input_queue.pop
 
-    @appender.append(message)
+    begin
+      @appender.append(message)
+    rescue Exception
+      @input_queue << message
+      raise
+    end
   end
 end
