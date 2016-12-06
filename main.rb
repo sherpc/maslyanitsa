@@ -2,10 +2,12 @@
 require './fetchers.rb'
 require 'rufus/scheduler'
 require 'sinatra'
+require 'sinatra/base'
 require 'json'
 
 RUN_INPUT_FETCHER_EVERY = ENV['WRITE_METRICS_EVERY'] || '1s'
 RUN_GOOGLE_FETCHER_EVERY = ENV['WRITE_METRICS_EVERY'] || '1s'
+WAL_PATH = ENV['WAL_PATH'] || 'out.txt'
 
 $input_queue = Queue.new()
 $google_queue = Queue.new()
@@ -13,7 +15,7 @@ $google_queue = Queue.new()
 # Init scheduler
 def run_scheduler
   scheduler = Rufus::Scheduler.new
-  fetcher = InputQueueFetcher.new($input_queue, "out.txt", $google_queue)
+  fetcher = InputQueueFetcher.new($input_queue, WAL_PATH, $google_queue)
   google_fetcher = GoogleQueueFetcher.new($google_queue)
 
   scheduler.every RUN_INPUT_FETCHER_EVERY do
@@ -27,16 +29,18 @@ def run_scheduler
 end
 
 run_scheduler()
-puts "##### Scheduler started. #####"
+puts "##### Scheduler started with WAL in #{WAL_PATH} #####"
 
 # Web
 
-post '/application' do
-  [400, {}, {}] unless request.form_data?
-  message = params.values
-  $input_queue << message
-  content_type :json
-  message.to_json
+class App < Sinatra::Base
+  post '/application' do
+    [400, {}, {}] unless request.form_data?
+    message = params.values
+    $input_queue << message
+    content_type :json
+    message.to_json
+  end
 end
 
 

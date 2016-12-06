@@ -24,7 +24,7 @@ class InputQueueFetcher
     @next_queue = next_queue
     @inc = Inc.new()
 
-    @output = File.open(output_file_path, 'a')
+    @output_file_path = output_file_path
   end
 
   def process
@@ -34,11 +34,14 @@ class InputQueueFetcher
     message.insert(0, get_timestamp().to_s)
     message.insert(0, @inc.next().to_s)
 
-    csv = message
+    row = message
             .map { |v| v.gsub('"', ' ') }
             .map { |v| "\"#{v}\"" }
             .join(",")
-    @output.puts(csv)
+
+    open(@output_file_path, 'a') do |output|
+      output.puts(row)
+    end
     @next_queue << message
   end
 
