@@ -1,40 +1,33 @@
-require 'googleauth'
-require 'google/apis/sheets_v4'
+# coding: utf-8
+require './fetchers.rb'
+require 'rufus/scheduler'
 
-class Appender
-  SPREADSHEET_KEY = ENV['SPREADSHEET_KEY'] || "1sTXPVwkmmlwae_sEpRVal4KKO3q-44nebelt22CgbmU"
-  TABLE_RANGE = ENV['TABLE_RANGE'] || "Sheet1!A1:B1"
-  DEFAULT_SCOPE = [
-    'https://www.googleapis.com/auth/drive',
-    'https://spreadsheets.google.com/feeds/'
-  ]
-  def initialize()
-    @service = get_service()
+RUN_INPUT_FETCHER_EVERY = ENV['WRITE_METRICS_EVERY'] || '5s'
+RUN_GOOGLE_FETCHER_EVERY = ENV['WRITE_METRICS_EVERY'] || '5s'
+
+$app = Appender.new()
+$input_queue = Queue.new()
+$google_queue = Queue.new()
+
+# Init scheduler
+def run_scheduler
+  scheduler = Rufus::Scheduler.new
+  fetcher = InputQueueFetcher.new($input_queue, "out.txt", $google_queue)
+  google_fetcher = GoogleQueueFetcher.new($google_queue)
+
+  scheduler.every RUN_INPUT_FETCHER_EVERY do
+    fetcher.process()
   end
 
-  def get_credentials (json_key_path_or_io, scope = DEFAULT_SCOPE)
-    if json_key_path_or_io.is_a?(String)
-      open(json_key_path_or_io) do |f|
-        get_credentials(f, scope)
-      end
-    else
-      Google::Auth::ServiceAccountCredentials.make_creds(
-        json_key_io: json_key_path_or_io, scope: scope)
-    end
+  scheduler.every RUN_GOOGLE_FETCHER_EVERY do
+    google_fetcher.process()
   end
-
-  def get_service ()
-    credentials = get_credentials("google_service_account.json")
-    service = Google::Apis::SheetsV4::SheetsService.new
-    service.client_options.application_name = "TEST"
-    service.authorization = credentials
-    service
-  end
-
-  def append(row)
-    vals = Google::Apis::SheetsV4::ValueRange.new()
-    vals.values = [row]
-    @service.append_spreadsheet_value(SPREADSHEET_KEY, TABLE_RANGE, vals, value_input_option: "USER_ENTERED")
-  end
-
 end
+
+## test
+
+def test
+  $input_queue << ["test", (rand()*100).to_i]
+  $input_queue << ["еще один", "день", (rand()*100).to_i]
+end
+
