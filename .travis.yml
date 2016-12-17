@@ -13,7 +13,7 @@ script:
 
 after_success:
   - if [ "$TRAVIS_BRANCH" == "master" ]; then
-    echo -e "Pushing to docker hub $(cat VERSION)\n"
+    echo -e "Pushing to docker hub $(cat VERSION)\n";
     docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
     docker push $(cat VERSION);
     fi
