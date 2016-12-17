@@ -6,12 +6,12 @@ services:
   - docker
 
 before_install:
-  - echo "Building image with version:"
-  - cat VERSION
+  - echo "Building image with version $(cat VERSION)"
   - docker build -t sherpc/maslo:$(cat VERSION) .
 
 after_success:
   - if [ "$TRAVIS_BRANCH" == "master" ]; then
+    echo "Pushing to docker hub"
     docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
-    docker push sherpc/maslo;
+    docker push sherpc/maslo:$(cat VERSION);
     fi

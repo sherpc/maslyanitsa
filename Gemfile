@@ -5,5 +5,6 @@ gem 'google_drive'
 gem 'thin'
 gem 'rufus-scheduler'
 gem 'sinatra', '~>1.4'
+gem "sinatra-cross_origin", "~> 0.3.1"
 gem 'json'
 gem 'foreman'
