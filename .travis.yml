@@ -5,7 +5,7 @@ services:
 
 before_install:
   - echo "Building image with version $(cat VERSION)"
-  - docker build -t sherpc/maslo:$(cat VERSION) .
+  - docker build -t $(cat VERSION) .
   - docker images
 
 script:
@@ -13,7 +13,7 @@ script:
 
 after_success:
   - if [ "$TRAVIS_BRANCH" == "master" ]; then
-    echo "Pushing to docker hub"
+    echo -e "Pushing to docker hub $(cat VERSION)\n"
     docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
-    docker push sherpc/maslo:$(cat VERSION);
+    docker push $(cat VERSION);
     fi
