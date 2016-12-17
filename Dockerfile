@@ -1,7 +1,13 @@
-FROM ruby:2.3.1
+FROM ruby:2.3.0-alpine
 
 COPY . /usr/src/app
-RUN cd /usr/src/app && bundle install
+
+RUN \
+    apk --update add bash g++ musl-dev make && \
+    cd /usr/src/app && \
+    rm Gemfile.lock && \
+    bundle install
+
 WORKDIR /usr/src/app
 
 EXPOSE 4567

@@ -1,0 +1,13 @@
+version: '2'
+services:
+  app:
+    image: maslo:0.5
+    volumes:
+      - /tmp/maslo:/mnt/data
+      - /etc/localtime:/etc/localtime:ro
+    environment:
+      - WAL_PATH=/mnt/data/wal.csv
+      - COUNTER_PATH=/mnt/data/counter
+      - TIMEZONE_CORRECTION=3
+    ports:
+      - "4567:4567"

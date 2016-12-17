@@ -5,8 +5,8 @@ require 'sinatra'
 require 'sinatra/base'
 require 'json'
 
-RUN_INPUT_FETCHER_EVERY = ENV['WRITE_METRICS_EVERY'] || '1s'
-RUN_GOOGLE_FETCHER_EVERY = ENV['WRITE_METRICS_EVERY'] || '1s'
+RUN_INPUT_FETCHER_EVERY = ENV['RUN_INPUT_FETCHER_EVERY'] || '0.1s'
+RUN_GOOGLE_FETCHER_EVERY = ENV['RUN_GOOGLE_FETCHER_EVERY'] || '1s'
 WAL_PATH = ENV['WAL_PATH'] || 'out.txt'
 
 $input_queue = Queue.new()

@@ -1,5 +1,6 @@
 source 'https://rubygems.org'
 
+gem 'tzinfo-data'
 gem 'google_drive'
 gem 'thin'
 gem 'rufus-scheduler'

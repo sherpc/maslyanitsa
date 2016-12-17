@@ -2,13 +2,14 @@
 require './appender.rb'
 require 'thread'
 
+TIMEZONE_CORRECTION = (ENV['TIMEZONE_CORRECTION'] || '0').to_i
+COUNTER_PATH = ENV['COUNTER_PATH'] || 'counter'
+
 def get_timestamp
-  Time.now.strftime("%d.%m.%Y %H:%M:%S")
+  (Time.now + TIMEZONE_CORRECTION * 3600).strftime("%d.%m.%Y %H:%M:%S")
 end
 
 class Inc
-  COUNTER_PATH = 'counter'
-
   def next()
     previous = File.exists?(COUNTER_PATH) ? File.read(COUNTER_PATH).to_i : 0;
     result = previous + 1
