@@ -28,7 +28,6 @@ def run_scheduler
   end
 
   scheduler.every RUN_GOOGLE_FETCHER_EVERY do
-    fetcher.process()
     google_fetcher.process()
   end
 end
@@ -53,6 +52,7 @@ class App < Sinatra::Base
   end
 
   get '/queues' do
+    response.headers['Access-Control-Allow-Origin'] = '*'
     content_type :json
     {:input => $input_queue.length, :google => $google_queue.length}.to_json
   end
