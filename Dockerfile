@@ -5,7 +5,6 @@ COPY . /usr/src/app
 RUN \
     apk --update add bash g++ musl-dev make && \
     cd /usr/src/app && \
-    rm Gemfile.lock && \
     bundle install
 
 WORKDIR /usr/src/app
