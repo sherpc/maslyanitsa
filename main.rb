@@ -5,7 +5,7 @@ require 'sinatra'
 require 'sinatra/base'
 require 'json'
 
-RUN_INPUT_FETCHER_EVERY = ENV['RUN_INPUT_FETCHER_EVERY'] || '0.1s'
+RUN_INPUT_FETCHER_EVERY = ENV['RUN_INPUT_FETCHER_EVERY'] || '0.3s'
 RUN_GOOGLE_FETCHER_EVERY = ENV['RUN_GOOGLE_FETCHER_EVERY'] || '1s'
 WAL_PATH = ENV['WAL_PATH'] || 'out.txt'
 
@@ -23,7 +23,6 @@ def run_scheduler
   end
 
   scheduler.every RUN_GOOGLE_FETCHER_EVERY do
-    puts "google"
     google_fetcher.process()
   end
 end

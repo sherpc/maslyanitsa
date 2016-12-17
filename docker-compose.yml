@@ -1,7 +1,7 @@
 version: '2'
 services:
   app:
-    image: maslo:0.5
+    image: maslo:0.6
     volumes:
       - /tmp/maslo:/mnt/data
       - /etc/localtime:/etc/localtime:ro
@@ -9,5 +9,7 @@ services:
       - WAL_PATH=/mnt/data/wal.csv
       - COUNTER_PATH=/mnt/data/counter
       - TIMEZONE_CORRECTION=3
+      - RUN_INPUT_FETCHER_EVERY=0.3s
+      - RUN_GOOGLE_FETCHER_EVERY=1s
     ports:
       - "4567:4567"
