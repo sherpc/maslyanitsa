@@ -3,9 +3,13 @@ sudo: required
 services:
   - docker
 
-script:
+before_install:
   - echo "Building image with version $(cat VERSION)"
   - docker build -t sherpc/maslo:$(cat VERSION) .
+  - docker images
+
+script:
+  - echo "OK"
 
 after_success:
   - if [ "$TRAVIS_BRANCH" == "master" ]; then
