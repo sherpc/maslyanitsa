@@ -20,10 +20,11 @@ end
 
 class InputQueueFetcher
 
-  def initialize(input_queue, output_file_path, next_queue)
+  def initialize(input_queue, output_file_path, next_queue, logger)
     @input_queue = input_queue
     @next_queue = next_queue
     @inc = Inc.new()
+    @logger = logger
 
     @output_file_path = output_file_path
   end
@@ -34,6 +35,8 @@ class InputQueueFetcher
     message = @input_queue.pop
     message.insert(0, get_timestamp().to_s)
     message.insert(0, @inc.next().to_s)
+
+    @logger.info "get message #{message[0]} in input fetcher"
 
     row = message
             .map { |v| v.gsub('"', ' ') }
@@ -53,8 +56,9 @@ end
 
 class GoogleQueueFetcher
 
-  def initialize(input_queue)
+  def initialize(input_queue, logger)
     @input_queue = input_queue
+    @logger = logger
     @appender = Appender.new()
   end
 
@@ -62,11 +66,13 @@ class GoogleQueueFetcher
     return if @input_queue.empty?
 
     message = @input_queue.pop
+    @logger.info "get message #{message[0]} in google fetcher"
 
     begin
       @appender.append(message)
-    rescue Exception
+    rescue Exception => e
       @input_queue << message
+      @logger.error e
       raise
     end
   end

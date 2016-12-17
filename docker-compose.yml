@@ -1,7 +1,7 @@
 version: '2'
 services:
   app:
-    image: maslo:0.6
+    image: maslo:0.7
     volumes:
       - /tmp/maslo:/mnt/data
       - /etc/localtime:/etc/localtime:ro
@@ -11,5 +11,8 @@ services:
       - TIMEZONE_CORRECTION=3
       - RUN_INPUT_FETCHER_EVERY=0.3s
       - RUN_GOOGLE_FETCHER_EVERY=1s
+      - LOG_DEBUG=true
     ports:
       - "4567:4567"
+    logging:
+      driver: json
