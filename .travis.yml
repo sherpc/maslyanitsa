@@ -1,0 +1,17 @@
+sudo: required
+
+language: ruby
+
+services:
+  - docker
+
+before_install:
+  - echo "Building image with version:"
+  - cat VERSION
+  - docker build -t sherpc/maslo:$(cat VERSION) .
+
+after_success:
+  - if [ "$TRAVIS_BRANCH" == "master" ]; then
+    docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
+    docker push sherpc/maslo;
+    fi
