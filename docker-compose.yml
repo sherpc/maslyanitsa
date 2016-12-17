@@ -1,13 +1,15 @@
 version: '2'
 services:
   app:
-    image: maslo:0.7
+    image: sherpc/maslo:0.9
     volumes:
       - /tmp/maslo:/mnt/data
+      - /tmp/keys:/mnt/keys
       - /etc/localtime:/etc/localtime:ro
     environment:
       - WAL_PATH=/mnt/data/wal.csv
       - COUNTER_PATH=/mnt/data/counter
+      - KEYS_PATH=/mnt/keys/
       - TIMEZONE_CORRECTION=3
       - RUN_INPUT_FETCHER_EVERY=0.3s
       - RUN_GOOGLE_FETCHER_EVERY=1s
@@ -15,4 +17,4 @@ services:
     ports:
       - "4567:4567"
     logging:
-      driver: json
+      driver: json-file

@@ -1,9 +1,11 @@
 require 'googleauth'
 require 'google/apis/sheets_v4'
 
+SPREADSHEET_KEY = ENV['SPREADSHEET_KEY'] || "1sTXPVwkmmlwae_sEpRVal4KKO3q-44nebelt22CgbmU"
+TABLE_RANGE = ENV['TABLE_RANGE'] || "Sheet1!A1:B1"
+KEYS_PATH = ENV['KEYS_PATH'] || 'keys/'
+
 class Appender
-  SPREADSHEET_KEY = ENV['SPREADSHEET_KEY'] || "1sTXPVwkmmlwae_sEpRVal4KKO3q-44nebelt22CgbmU"
-  TABLE_RANGE = ENV['TABLE_RANGE'] || "Sheet1!A1:B1"
   DEFAULT_SCOPE = [
     'https://www.googleapis.com/auth/drive',
     'https://spreadsheets.google.com/feeds/'
@@ -24,7 +26,7 @@ class Appender
   end
 
   def get_service ()
-    credentials = get_credentials("google_service_account.json")
+    credentials = get_credentials(KEYS_PATH + "google_service_account.json")
     service = Google::Apis::SheetsV4::SheetsService.new
     service.client_options.application_name = "TEST"
     service.authorization = credentials
