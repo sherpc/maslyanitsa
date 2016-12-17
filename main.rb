@@ -41,13 +41,11 @@ $logger.info "##### Scheduler started with WAL in #{WAL_PATH} #####"
 class App < Sinatra::Base
   configure :production, :development do
     enable :logging
-    enable :cross_origin
   end
-
-  set :allow_origin, :any
 
   post '/application' do
     [400, {}, {}] unless request.form_data?
+    response.headers['Access-Control-Allow-Origin'] = '*'
     message = params.values
     $input_queue << message
     content_type :json

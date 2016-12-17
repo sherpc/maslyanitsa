@@ -1,7 +1,7 @@
 version: '2'
 services:
   app:
-    image: sherpc/maslo:0.9
+    image: sherpc/maslo:0.10
     volumes:
       - /tmp/maslo:/mnt/data
       - /tmp/keys:/mnt/keys
