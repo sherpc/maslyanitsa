@@ -55,15 +55,24 @@ class App < Sinatra::Base
     [400, {}, {}] unless request.form_data?
     param :name, String, required: true, blank: false, max_length: 150
     param :email, String, required: true, blank: false, max_length: 100, format: VALID_EMAIL_REGEX
-    param :people, Integer, required: true, min: 0, max: 50
-    param :experience, Integer, required: true, min: 0, max: 40
-    param :new, Integer, required: true, min: 0, max: 30
-    param :children, Integer, required: true, min: 0, max: 10
+    param :people, Integer, required: true, min: 0, max: 100
+    param :experience, Integer, required: true, min: 0, max: 100
+    param :new, Integer, required: true, min: 0, max: 100
+    param :children, Integer, required: true, min: 0, max: 100
     param :club, String, required: true, max_length: 150
     param :comment, String, required: true, max_length: 500
 
     response.headers['Access-Control-Allow-Origin'] = '*'
-    message = params.values
+    message = [
+      params[:name],
+      params[:email],
+      params[:people],
+      params[:experience],
+      params[:new],
+      params[:children],
+      params[:club],
+      params[:comment]
+    ]
     $input_queue << message
     message.to_json
   end
