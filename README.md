@@ -14,6 +14,8 @@
 ### Формат входных данных POST /application
 
 ```
+VALID_EMAIL_REGEX = /\A[\w+\-.]+@[a-z\d\-]+(\.[a-z\d\-]+)*\.[a-z]+\z/i
+
 param :name, String, required: true, blank: false, max_length: 150
 param :email, String, required: true, blank: false, max_length: 100, format: VALID_EMAIL_REGEX
 param :people, Integer, required: true, min: 0, max: 50
