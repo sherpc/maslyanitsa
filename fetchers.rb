@@ -39,7 +39,7 @@ class InputQueueFetcher
     @logger.info "get message #{message[0]} in input fetcher"
 
     row = message
-            .map { |v| v.gsub('"', ' ') }
+            .map { |v| v.to_s.gsub('"', ' ') }
             .map { |v| "\"#{v}\"" }
             .join(",")
 
