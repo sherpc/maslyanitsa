@@ -16,8 +16,9 @@ VALID_EMAIL_REGEX = /\A[\w+\-.]+@[a-z\d\-]+(\.[a-z\d\-]+)*\.[a-z]+\z/i
 
 $input_queue = Queue.new()
 $google_queue = Queue.new()
-$logger = Logger.new(STDOUT)
+$logger = Logger.new('/tmp/stdout')
 $logger.level = LOGGER_LEVEL
+$logger.info "##### Logger started #####"
 
 # Init scheduler
 def run_scheduler

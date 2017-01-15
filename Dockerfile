@@ -1,5 +1,8 @@
 FROM ruby:2.3.0-alpine
 
+## forward logs
+RUN ln -sf /dev/stdout /tmp/stdout
+
 COPY . /usr/src/app
 
 RUN \
