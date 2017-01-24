@@ -1,0 +1,5 @@
+[Host: example.org]
+[Connection: close]
+[User-Agent: Tank]
+97 /application
+name=tank_test&email=tank@test.ru&people=7&experience=3&new=4&children=5&club=tankers&comment=wow

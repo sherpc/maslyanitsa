@@ -26,11 +26,11 @@ def run_scheduler
   fetcher = InputQueueFetcher.new($input_queue, WAL_PATH, $google_queue, $logger)
   google_fetcher = GoogleQueueFetcher.new($google_queue, $logger)
 
-  scheduler.every RUN_INPUT_FETCHER_EVERY do
+  scheduler.every RUN_INPUT_FETCHER_EVERY, :overlap => false do
     fetcher.process()
   end
 
-  scheduler.every RUN_GOOGLE_FETCHER_EVERY do
+  scheduler.every RUN_GOOGLE_FETCHER_EVERY, :overlap => false do
     google_fetcher.process()
   end
 end

@@ -1,5 +1,6 @@
 # coding: utf-8
 require './appender.rb'
+require './email.rb'
 require 'thread'
 
 TIMEZONE_CORRECTION = (ENV['TIMEZONE_CORRECTION'] || '0').to_i
@@ -56,10 +57,11 @@ end
 
 class GoogleQueueFetcher
 
-  def initialize(input_queue, logger)
+  def initialize(input_queue, next_queue, logger)
     @input_queue = input_queue
     @logger = logger
     @appender = Appender.new()
+    @next_queue = next_queue
   end
 
   def process
@@ -70,6 +72,31 @@ class GoogleQueueFetcher
 
     begin
       @appender.append(message)
+    rescue Exception => e
+      @input_queue << message
+      @logger.error e
+      raise
+    end
+
+    @next_queue << message
+  end
+end
+
+class ConfirmationEmailQueueFetcher
+  def initialize(input_queue, logger)
+    @input_queue = input_queue
+    @logger = logger
+    @email = Email.new()
+  end
+
+  def process
+    return if @input_queue.empty?
+
+    message = @input_queue.pop
+    @logger.info "get message #{message[0]} in email fetcher"
+
+    begin
+      @email.send(message)
     rescue Exception => e
       @input_queue << message
       @logger.error e

@@ -18,3 +18,9 @@ services:
       - "4567:4567"
     logging:
       driver: json-file
+  tank:
+    image: direvius/yandex-tank
+    volumes:
+      - /Users/a.sher/Sources/maslyanitsa:/var/loadtest
+      - $HOME/.ssh:/root/.ssh
+    network_mode: "host"
