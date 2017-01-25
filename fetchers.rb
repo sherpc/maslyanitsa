@@ -12,7 +12,7 @@ end
 
 class Inc
   def next()
-    previous = File.exists?(COUNTER_PATH) ? File.read(COUNTER_PATH).to_i : 0;
+    previous = File.exists?(COUNTER_PATH) ? File.read(COUNTER_PATH).to_i : 0
     result = previous + 1
     File.write(COUNTER_PATH, result)
     result

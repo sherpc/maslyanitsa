@@ -1,28 +1,58 @@
 # coding: utf-8
 require 'httparty'
+require 'set'
+
+class PersistentSet
+  def initialize(path)
+    @path = path
+    @set = File.exists?(path) ? File.readlines(@path).map(&:strip).to_set : Set.new()
+  end
+
+  def contains?(x)
+    return @set.include?(x)
+  end
+
+  def add(x)
+    open(@path, 'a') { |f|
+      f.puts(x)
+    }
+    @set.add(x)
+  end
+end
 
 class Email
   BASE_URL = "https://api.sendgrid.com/api/mail.send.json"
-  BODY_URL = ENV['CONFIRM_EMAIL_BODY_URL'] || 'https://raw.githubusercontent.com/sherpc/maslyanitsa/master/README.md'
+  BODY_URL = ENV['CONFIRM_EMAIL_BODY_URL'] || 'https://raw.githubusercontent.com/sherpc/maslyanitsa/master/confirm_email.txt'
   SUBJECT = ENV['CONFIRM_EMAIL_SUBJECT'] || 'Подтверждение заявки. Рождественка'
+  SENT_LOG_PATH = ENV['SENT_LOG_PATH'] || 'sent_emails.log'
+
+  def initialize()
+    @log = PersistentSet.new(SENT_LOG_PATH)
+  end
 
   def send(message)
-    email = message[3] ## id, timestamp, name, email
+    ## id, timestamp, name, email
+    name = message[2]
+    email = message[3] 
 
-    return if email.nil? or email == ""
+    return :alredy_sent if email.nil? or email == "" or @log.contains?(email)
 
-    post_to_sendgrid(email)
+    result = post_to_sendgrid(email, name)
+    @log.add(email)
+    return result
   end
 
   def debug
-    # get_body()
-    post_to_sendgrid('aleksandrsher@gmail.com')
+    get_body()
+    # post_to_sendgrid('aleksandrsher@gmail.com', 'aleks')
+    # send([0, 0, 'Алекс', 'aleksandrsher@gmail.com'])
   end
 
   private
 
-  def post_to_sendgrid(to)
-    send_via_sendgrid(to, SUBJECT, get_body())
+  def post_to_sendgrid(to, name)
+    body = get_body().sub("{name}", name)
+    return send_via_sendgrid(to, SUBJECT, body)
   end
 
   def get_body()

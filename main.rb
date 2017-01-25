@@ -10,12 +10,14 @@ require 'logger'
 
 RUN_INPUT_FETCHER_EVERY = ENV['RUN_INPUT_FETCHER_EVERY'] || '0.3s'
 RUN_GOOGLE_FETCHER_EVERY = ENV['RUN_GOOGLE_FETCHER_EVERY'] || '1s'
+RUN_EMAIL_FETCHER_EVERY = ENV['RUN_EMAIL_FETCHER_EVERY'] || '1s'
 WAL_PATH = ENV['WAL_PATH'] || 'out.txt'
 LOGGER_LEVEL = ENV['LOG_DEBUG'] == 'true' ? Logger::DEBUG : Logger::WARN
 VALID_EMAIL_REGEX = /\A[\w+\-.]+@[a-z\d\-]+(\.[a-z\d\-]+)*\.[a-z]+\z/i
 
 $input_queue = Queue.new()
 $google_queue = Queue.new()
+$email_queue = Queue.new()
 $logger = Logger.new('/tmp/stdout')
 $logger.level = LOGGER_LEVEL
 $logger.info "##### Logger started #####"
@@ -24,7 +26,8 @@ $logger.info "##### Logger started #####"
 def run_scheduler
   scheduler = Rufus::Scheduler.new
   fetcher = InputQueueFetcher.new($input_queue, WAL_PATH, $google_queue, $logger)
-  google_fetcher = GoogleQueueFetcher.new($google_queue, $logger)
+  google_fetcher = GoogleQueueFetcher.new($google_queue, $email_queue, $logger)
+  email_fetcher = ConfirmationEmailQueueFetcher.new($email_queue, $logger)
 
   scheduler.every RUN_INPUT_FETCHER_EVERY, :overlap => false do
     fetcher.process()
@@ -32,6 +35,10 @@ def run_scheduler
 
   scheduler.every RUN_GOOGLE_FETCHER_EVERY, :overlap => false do
     google_fetcher.process()
+  end
+
+  scheduler.every RUN_EMAIL_FETCHER_EVERY, :overlap => false do
+    email_fetcher.process()
   end
 end
 
