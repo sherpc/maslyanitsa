@@ -9,6 +9,7 @@ services:
     environment:
       - WAL_PATH=/mnt/data/wal.csv
       - COUNTER_PATH=/mnt/data/counter
+      - SENT_LOG_PATH=/mnt/data/sent_emails.log
       - KEYS_PATH=/mnt/keys/
       - TIMEZONE_CORRECTION=3
       - RUN_INPUT_FETCHER_EVERY=0.3s

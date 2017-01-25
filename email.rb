@@ -22,12 +22,14 @@ end
 
 class Email
   BASE_URL = "https://api.sendgrid.com/api/mail.send.json"
-  BODY_URL = ENV['CONFIRM_EMAIL_BODY_URL'] || 'https://raw.githubusercontent.com/sherpc/maslyanitsa/master/confirm_email.txt'
+  BODY_URL = ENV['CONFIRM_EMAIL_BODY_URL'] || 'http://rozhdestvenka.ru/maslo2017/confirm_email3.htm' # 'https://raw.githubusercontent.com/sherpc/maslyanitsa/master/confirm_email.txt'
   SUBJECT = ENV['CONFIRM_EMAIL_SUBJECT'] || 'Подтверждение заявки. Рождественка'
   SENT_LOG_PATH = ENV['SENT_LOG_PATH'] || 'sent_emails.log'
+  WHITE_LIST = ENV['WHITE_LIST'] || ''
 
   def initialize()
     @log = PersistentSet.new(SENT_LOG_PATH)
+    @whitelist = WHITE_LIST.split(',').to_set
   end
 
   def send(message)
@@ -38,7 +40,7 @@ class Email
     return :alredy_sent if email.nil? or email == "" or @log.contains?(email)
 
     result = post_to_sendgrid(email, name)
-    @log.add(email)
+    @log.add(email) unless @whitelist.include?(email)
     return result
   end
 
