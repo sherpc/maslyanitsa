@@ -86,7 +86,7 @@ class ConfirmationEmailQueueFetcher
   def initialize(input_queue, logger)
     @input_queue = input_queue
     @logger = logger
-    @email = Email.new()
+    @email = Email.new(@logger)
   end
 
   def process
@@ -96,7 +96,10 @@ class ConfirmationEmailQueueFetcher
     @logger.info "get message #{message[0]} in email fetcher"
 
     begin
-      @email.send(message)
+      result = @email.send(message)
+      unless result
+        @logger.error "can't send #{message}"
+      end
     rescue Exception => e
       @input_queue << message
       @logger.error e

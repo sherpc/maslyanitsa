@@ -39,19 +39,17 @@ class Email
   def send(message)
     ## id, timestamp, name, email
     name = message[2]
-    email = message[3] 
+    email = message[3]
 
     return :alredy_sent if email.nil? or email == "" or @log.contains?(email)
 
     result = post_to_sendgrid(email, name)
-    @log.add(email) unless @whitelist.include?(email)
+    @log.add(email) unless result == false or @whitelist.include?(email)
     return result
   end
 
   def debug
     get_body()
-    # post_to_sendgrid('aleksandrsher@gmail.com', 'aleks')
-    # send([0, 0, 'Алекс', 'aleksandrsher@gmail.com'])
   end
 
   private
