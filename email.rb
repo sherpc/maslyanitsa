@@ -26,10 +26,14 @@ class Email
   SUBJECT = ENV['CONFIRM_EMAIL_SUBJECT'] || 'Подтверждение заявки. Рождественка'
   SENT_LOG_PATH = ENV['SENT_LOG_PATH'] || 'sent_emails.log'
   WHITE_LIST = ENV['WHITE_LIST'] || ''
+  SG_LOGIN = ENV['SG_LOGIN']
+  SG_PASS = ENV['SG_PASS']
+  SG_FROM = ENV['SG_FROM']
 
-  def initialize()
+  def initialize(logger)
     @log = PersistentSet.new(SENT_LOG_PATH)
     @whitelist = WHITE_LIST.split(',').to_set
+    logger.info("Email started with whitelist #{@whitelist}")
   end
 
   def send(message)
@@ -67,13 +71,13 @@ class Email
 
   def send_via_sendgrid(to, subject, body)
     payload = {
-      "api_user" => "maslyanitsa",
-      "api_key" => "Maslyanitsa1",
+      "api_user" => SG_LOGIN,
+      "api_key" => SG_PASS,
       "to" => to,
       "subject" => subject,
       "html" => body,
       "text" => strip(body),
-      "from" => "reg@rozhdestvenka.ru",
+      "from" => SG_FROM,
       "headers" => '{"X-Mailer": "Rozhdestvenka Mail Sender", "X-Mailru-Msgtype": "maslo"}'
     }
 
